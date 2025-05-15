@@ -15,4 +15,4 @@ logging:
 jwt:
   utils:
     key: eD7nH9JHgX1Q2YqVrZG3f7qPp0V57D1jE9vNjT2j2Y8=
-    expiration: 120000
+    expiration: 600000

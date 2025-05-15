@@ -5,7 +5,6 @@ import com.mongodb.api.hrms.model.Leave;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-@SuppressWarnings("unused")
 public interface LeaveMapper {
     Leave leaveDtoToLeave(LeaveDto leaveDto);
 

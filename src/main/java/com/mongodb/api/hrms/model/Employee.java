@@ -6,7 +6,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
 
 @Data
@@ -22,7 +21,6 @@ public class Employee {
     private String jobId;
     private BigDecimal salary;
     private String managerId;
-    private List<Address> addresses;
-    private Map<String, Integer> leaveBalance;
-    private List<Leave> leaves;
+    private Address address;
+    private Map<String, Integer> leaveBalances;
 }

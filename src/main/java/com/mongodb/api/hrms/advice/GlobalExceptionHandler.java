@@ -1,7 +1,9 @@
-package com.mongodb.api.hrms.exception;
+package com.mongodb.api.hrms.advice;
 
 import com.mongodb.api.hrms.dto.ErrorDto;
 import com.mongodb.api.hrms.dto.ErrorItemDto;
+import com.mongodb.api.hrms.exception.DocumentNotFoundException;
+import com.mongodb.api.hrms.exception.DocumentOperationException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,13 +15,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.util.List;
 
 @ControllerAdvice
-@SuppressWarnings({"java:S6212", "unused"})
 public class GlobalExceptionHandler {
     public static final int HTTP_MESSAGE_NOT_READABLE_ERROR_CODE = 1;
     public static final int CONSTRAINT_VIOLATION_ERROR_CODE = 2;
     public static final int BAD_CREDENTIALS_ERROR_CODE = 3;
-    public static final int ENTITY_NOT_FOUND_ERROR_CODE = 4;
-    public static final int ENTITY_OPERATION_ERROR_CODE = 5;
+    public static final int DOCUMENT_NOT_FOUND_ERROR_CODE = 4;
+    public static final int DOCUMENT_OPERATION_ERROR_CODE = 5;
     public static final int UNKNOWN_ERROR_CODE = -1;
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -42,14 +43,14 @@ public class GlobalExceptionHandler {
         return getSingleErrorDto(BAD_CREDENTIALS_ERROR_CODE, e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorDto> handleEntityNotFoundException(EntityNotFoundException e) {
-        return getSingleErrorDto(ENTITY_NOT_FOUND_ERROR_CODE, e.getMessage(), HttpStatus.NOT_FOUND);
+    @ExceptionHandler(DocumentNotFoundException.class)
+    public ResponseEntity<ErrorDto> handleDocumentNotFoundException(DocumentNotFoundException e) {
+        return getSingleErrorDto(DOCUMENT_NOT_FOUND_ERROR_CODE, e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(EntityOperationException.class)
-    public ResponseEntity<ErrorDto> handleEntityOperationException(EntityOperationException e) {
-        return getSingleErrorDto(ENTITY_OPERATION_ERROR_CODE, e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+    @ExceptionHandler(DocumentOperationException.class)
+    public ResponseEntity<ErrorDto> handleDocumentOperationException(DocumentOperationException e) {
+        return getSingleErrorDto(DOCUMENT_OPERATION_ERROR_CODE, e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     @ExceptionHandler(Exception.class)

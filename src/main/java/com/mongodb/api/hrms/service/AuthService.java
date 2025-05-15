@@ -15,7 +15,6 @@ import org.springframework.validation.annotation.Validated;
 @Service
 @Validated
 @RequiredArgsConstructor
-@SuppressWarnings("java:S6212")
 public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;

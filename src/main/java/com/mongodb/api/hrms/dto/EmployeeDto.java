@@ -10,8 +10,6 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @Data
@@ -39,10 +37,8 @@ public class EmployeeDto {
 
     private String managerId;
 
-    private List<@Valid AddressDto> addresses;
+    @Valid
+    private AddressDto address;
 
-    private Map<String, @PositiveOrZero(message = "balance must be positive or zero") Integer> leaveBalance;
-
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private List<LeaveDto> leaves = new ArrayList<>();
+    private Map<String, @PositiveOrZero(message = "balance must be positive or zero") Integer> leaveBalances;
 }

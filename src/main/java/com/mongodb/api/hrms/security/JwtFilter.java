@@ -19,7 +19,6 @@ import java.io.IOException;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@SuppressWarnings("java:S6212")
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtils jwtUtils;
     private final CustomUserDetailsService customUserDetailsService;
