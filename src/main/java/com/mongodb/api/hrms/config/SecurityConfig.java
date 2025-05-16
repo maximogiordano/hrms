@@ -26,8 +26,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // define authorization rules for incoming HTTP requests
                 .authorizeHttpRequests(auth -> auth
-                        // allow anyone (even unauthenticated users) to access the /auth/login endpoint
-                        .requestMatchers("/auth/login").permitAll()
+                        // allow anyone (even unauthenticated users) to access the following endpoints
+                        .requestMatchers("/auth/login", "/test/encode").permitAll()
                         // require all other endpoints to be authenticated
                         .anyRequest().authenticated())
                 // add custom Filter before Spring’s built-in username/password filter
