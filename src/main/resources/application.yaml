@@ -1,9 +1,7 @@
 spring:
   data:
     mongodb:
-      #local: mongodb://localhost:27017/hrms
-      #cloud: mongodb+srv://admin:4dm1n@cluster0.genjgr0.mongodb.net/hrms?retryWrites=true&w=majority&appName=Cluster0
-      uri: mongodb://localhost:27017/hrms
+      uri: mongodb+srv://admin:4dm1n@cluster0.genjgr0.mongodb.net/hrms?retryWrites=true&w=majority&appName=Cluster0
 
 logging:
   level:
@@ -15,4 +13,4 @@ logging:
 jwt:
   utils:
     key: eD7nH9JHgX1Q2YqVrZG3f7qPp0V57D1jE9vNjT2j2Y8=
-    expiration: 600000
+    expiration: 120000
