@@ -9,8 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 
@@ -21,6 +23,8 @@ public class GlobalExceptionHandler {
     public static final int BAD_CREDENTIALS_ERROR_CODE = 3;
     public static final int DOCUMENT_NOT_FOUND_ERROR_CODE = 4;
     public static final int DOCUMENT_OPERATION_ERROR_CODE = 5;
+    public static final int NO_RESOURCE_FOUND_ERROR_CODE = 6;
+    public static final int AUTHORIZATION_DENIED_ERROR_CODE = 7;
     public static final int UNKNOWN_ERROR_CODE = -1;
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -51,6 +55,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DocumentOperationException.class)
     public ResponseEntity<ErrorDto> handleDocumentOperationException(DocumentOperationException e) {
         return getSingleErrorDto(DOCUMENT_OPERATION_ERROR_CODE, e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorDto> handleNoResourceFoundException(NoResourceFoundException e) {
+        return getSingleErrorDto(NO_RESOURCE_FOUND_ERROR_CODE, e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ErrorDto> handleAuthorizationDeniedException(AuthorizationDeniedException e) {
+        return getSingleErrorDto(AUTHORIZATION_DENIED_ERROR_CODE, e.toString(), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(Exception.class)
