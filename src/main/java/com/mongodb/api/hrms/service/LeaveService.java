@@ -11,6 +11,7 @@ import com.mongodb.api.hrms.repository.LeaveRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.temporal.ChronoUnit;
@@ -25,6 +26,7 @@ public class LeaveService {
     private final LeaveRepository leaveRepository;
     private final LeaveMapper leaveMapper;
 
+    @Transactional
     public LeaveDto createLeave(@Valid LeaveDto leaveDto) {
         Employee employee = findEmployeeByIdOrFail(leaveDto.getEmployeeId());
         Leave leave = leaveMapper.leaveDtoToLeave(leaveDto);
@@ -42,7 +44,8 @@ public class LeaveService {
     }
 
     private Employee findEmployeeByIdOrFail(String employeeId) {
-        return employeeRepository.findById(employeeId).orElseThrow(() -> new DocumentNotFoundException("employee not found"));
+        return employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new DocumentNotFoundException("employee not found"));
     }
 
     private int getBalance(Map<String, Integer> leaveBalances, String leaveType) {
