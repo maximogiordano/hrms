@@ -2,6 +2,7 @@ package com.mongodb.api.hrms.controller;
 
 import com.mongodb.api.hrms.dto.EmployeeDto;
 import com.mongodb.api.hrms.service.EmployeeService;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,7 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @PostMapping
+    @RolesAllowed("ADMIN")
     public EmployeeDto createEmployee(@RequestBody EmployeeDto employeeDto) {
         return employeeService.createEmployee(employeeDto);
     }

@@ -10,6 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Provides Spring Security with the authenticated user's information during the authentication process.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

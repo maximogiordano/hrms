@@ -1,14 +1,10 @@
 package com.mongodb.api.hrms.config;
 
-import com.mongodb.api.hrms.security.CustomUserDetailsService;
 import com.mongodb.api.hrms.security.JwtFilter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,38 +15,30 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableMethodSecurity
-@RequiredArgsConstructor
+@EnableMethodSecurity(jsr250Enabled = true) // Enables @RolesAllowed
 public class SecurityConfig {
-    private final JwtFilter jwtFilter;
-    private final CustomUserDetailsService userDetailsService;
-
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
         return http
+                // disable CSRF protection
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // don't store login info in memory
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // define authorization rules for incoming HTTP requests
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll() // <-- allow login
-                        .requestMatchers(HttpMethod.POST, "/employees").hasRole("ADMIN")
+                        // allow anyone (even unauthenticated users) to access the /auth/login endpoint
+                        .requestMatchers("/auth/login").permitAll()
+                        // require all other endpoints to be authenticated
                         .anyRequest().authenticated())
+                // add custom Filter before Spring’s built-in username/password filter
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                // finalize and build the SecurityFilterChain object with the above configuration
                 .build();
     }
 
     @Bean
-    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authBuilder.authenticationProvider(authenticationProvider());
-        return authBuilder.build();
-    }
-
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
     @Bean

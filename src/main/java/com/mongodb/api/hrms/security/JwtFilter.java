@@ -9,23 +9,28 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
+/**
+ * Filter that validates incoming JWT tokens and sets the security context for authenticated users.
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtils jwtUtils;
-    private final CustomUserDetailsService customUserDetailsService;
+    private final UserDetailsService userDetailsService;
 
     /**
-     * This method is called once per request. It attempts to extract and validate the JWT token, and if valid, sets the
-     * authentication in the SecurityContext.
+     * Called once per request to apply JWT authentication.
      */
     @Override
     protected void doFilterInternal(
@@ -33,51 +38,49 @@ public class JwtFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        String token = extractToken(request);
+        // extract the token from the Authorization header
+        String token = getToken(request);
 
-        try {
-            setAuthentication(token);
-        } catch (Exception e) {
-            log.warn(e.toString());
+        if (token != null) {
+            processToken(token);
         }
 
-        // Continue the filter chain (pass the request to the next filter)
+        // continue the filter chain
         filterChain.doFilter(request, response);
     }
 
-    /**
-     * Extracts the JWT token from the Authorization header of the request. The token is expected to be in the format:
-     * "Bearer &lt;token&gt;"
-     */
-    private String extractToken(HttpServletRequest request) {
+    private String getToken(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
 
-        return authHeader != null && authHeader.startsWith("Bearer ") ?
-                authHeader.substring(7) :
-                null;
+        return authHeader != null && authHeader.startsWith("Bearer ") ? authHeader.substring(7) : null;
     }
 
     /**
-     * Sets the Spring Security authentication.
+     * Extracts the username from the token and sets the security context if the user is not already authenticated.
      */
-    private void setAuthentication(String token) {
-        // Check that the token exists and no authentication has been set yet
-        if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Extract the username from the token (if it doesn't fail, the token is valid and hasn't expired yet)
-            String username = jwtUtils.extractUsername(token);
+    private void processToken(String token) {
+        String username = jwtUtils.extractUsername(token); // this also validates the token
 
-            // Load the user's details from the database
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-
-            // Create an authentication object with user details and authorities
-            Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null, // credentials are not needed for JWT-based auth
-                    userDetails.getAuthorities()
-            );
-
-            // Set the authentication in the security context
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        // ensure the user is not already authenticated
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            setSecurityContext(token, username);
         }
+    }
+
+    private void setSecurityContext(String token, String username) {
+        // load user details
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        // convert roles from the token into Spring Security authorities
+        List<SimpleGrantedAuthority> authorities = jwtUtils.extractRoles(token)
+                .stream()
+                .map(SimpleGrantedAuthority::new)
+                .toList();
+
+        // create an authentication object
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
+
+        // set it in the context
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }
