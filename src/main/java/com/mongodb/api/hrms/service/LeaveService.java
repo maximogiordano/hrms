@@ -27,32 +27,29 @@ public class LeaveService {
 
     public LeaveDto createLeave(@Valid LeaveDto leaveDto) {
         Employee employee = findEmployeeByIdOrFail(leaveDto.getEmployeeId());
+        Leave leave = leaveMapper.leaveDtoToLeave(leaveDto);
 
-        int balance = getBalance(employee.getLeaveBalances(), leaveDto.getLeaveType());
-        int numberOfDays = getNumberOfDays(leaveDto);
+        int balance = getBalance(employee.getLeaveBalances(), leave.getLeaveType());
+        int numberOfDays = getNumberOfDays(leave);
 
         checkBalance(balance, numberOfDays);
         checkManager(leaveDto.getApprovedBy(), employee.getManagerId());
 
-        Leave leave = leaveMapper.leaveDtoToLeave(leaveDto);
-        employee.getLeaveBalances().put(leaveDto.getLeaveType(), balance - numberOfDays);
-
         leave = leaveRepository.save(leave);
-        employeeRepository.save(employee);
+        employeeRepository.decrementLeaveBalance(leave.getEmployeeId(), leave.getLeaveType(), numberOfDays);
 
         return leaveMapper.leaveToLeaveDto(leave);
     }
 
     private Employee findEmployeeByIdOrFail(String employeeId) {
-        return employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new DocumentNotFoundException("employee not found"));
+        return employeeRepository.findById(employeeId).orElseThrow(() -> new DocumentNotFoundException("employee not found"));
     }
 
     private int getBalance(Map<String, Integer> leaveBalances, String leaveType) {
         return leaveBalances == null ? 0 : leaveBalances.getOrDefault(leaveType, 0);
     }
 
-    private int getNumberOfDays(LeaveDto leaveDto) {
+    private int getNumberOfDays(Leave leaveDto) {
         return Math.toIntExact(ChronoUnit.DAYS.between(leaveDto.getStartDate(), leaveDto.getEndDate()) + 1);
     }
 
