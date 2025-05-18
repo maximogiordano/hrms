@@ -23,4 +23,8 @@ public class Employee {
     private String managerId;
     private Address address;
     private Map<String, Integer> leaveBalances;
+
+    public int getBalance(String leaveType) {
+        return leaveBalances == null ? 0 : leaveBalances.getOrDefault(leaveType, 0);
+    }
 }
