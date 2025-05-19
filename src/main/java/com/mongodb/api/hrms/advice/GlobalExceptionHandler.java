@@ -64,7 +64,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<ErrorDto> handleAuthorizationDeniedException(AuthorizationDeniedException e) {
-        return getSingleErrorDto(AUTHORIZATION_DENIED_ERROR_CODE, e.toString(), HttpStatus.FORBIDDEN);
+        return getSingleErrorDto(AUTHORIZATION_DENIED_ERROR_CODE, e.getMessage(), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(Exception.class)
@@ -73,7 +73,7 @@ public class GlobalExceptionHandler {
     }
 
     private ResponseEntity<ErrorDto> getSingleErrorDto(Integer code, String detail, HttpStatus status) {
-        ErrorDto body = new ErrorDto(List.of(new ErrorItemDto(code, detail)));
+        var body = new ErrorDto(List.of(new ErrorItemDto(code, detail)));
         return new ResponseEntity<>(body, status);
     }
 }
