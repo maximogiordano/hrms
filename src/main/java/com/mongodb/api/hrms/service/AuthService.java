@@ -26,7 +26,7 @@ public class AuthService {
 
         authentication = authenticationManager.authenticate(authentication);
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        var userDetails = (UserDetails) authentication.getPrincipal();
         String token = jwtUtils.generateToken(userDetails);
 
         return new AuthResponse(token);
