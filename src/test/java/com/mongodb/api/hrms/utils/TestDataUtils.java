@@ -2,8 +2,10 @@ package com.mongodb.api.hrms.utils;
 
 import com.mongodb.api.hrms.dto.AddressDto;
 import com.mongodb.api.hrms.dto.EmployeeDto;
+import com.mongodb.api.hrms.dto.LeaveDto;
 import com.mongodb.api.hrms.model.Address;
 import com.mongodb.api.hrms.model.Employee;
+import com.mongodb.api.hrms.model.Leave;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -139,5 +141,39 @@ public class TestDataUtils {
         employee.setLeaveBalances(leaveBalances);
 
         return employee;
+    }
+
+    /**
+     * @return a new instance of a fully populated leave with a fixed set of data.
+     */
+    public static Leave createFullyPopulatedLeave(String id) {
+        Leave leave = new Leave();
+
+        leave.setId(id);
+        leave.setEmployeeId("682904c2ad128f5295905416");
+        leave.setLeaveType("annual");
+        leave.setStartDate(LocalDate.of(2025, 5, 19));
+        leave.setEndDate(LocalDate.of(2025, 5, 23));
+        leave.setStatus("pending");
+        leave.setApprovedBy("682904c2ad128f5295905415");
+
+        return leave;
+    }
+
+    /**
+     * @return the same as {@link #createFullyPopulatedLeave(String)}, but as a DTO.
+     */
+    public static LeaveDto createFullyPopulatedLeaveDto(String id) {
+        LeaveDto leaveDto = new LeaveDto();
+
+        leaveDto.setId(id);
+        leaveDto.setEmployeeId("682904c2ad128f5295905416");
+        leaveDto.setLeaveType("annual");
+        leaveDto.setStartDate(LocalDate.of(2025, 5, 19));
+        leaveDto.setEndDate(LocalDate.of(2025, 5, 23));
+        leaveDto.setStatus("pending");
+        leaveDto.setApprovedBy("682904c2ad128f5295905415");
+
+        return leaveDto;
     }
 }
