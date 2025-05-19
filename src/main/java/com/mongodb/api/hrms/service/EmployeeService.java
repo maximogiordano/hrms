@@ -20,7 +20,7 @@ public class EmployeeService {
     private final EmployeeMapper employeeMapper;
 
     public EmployeeDto createEmployee(@Valid EmployeeDto employeeDto) {
-        Employee employee = employeeMapper.employeeDtoToEmployee(employeeDto);
+        var employee = employeeMapper.employeeDtoToEmployee(employeeDto);
 
         Optional<Employee> searchedEmployee = employeeRepository.findByFirstNameAndLastNameAndPhoneNumber(
                 employee.getFirstName(),
