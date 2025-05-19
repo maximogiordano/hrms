@@ -176,4 +176,16 @@ public class TestDataUtils {
 
         return leaveDto;
     }
+
+    /**
+     * @return a new instance of a leave with the specified date range.
+     */
+    public static LeaveDto createLeaveDto(LocalDate startDate, LocalDate endDate) {
+        LeaveDto leaveDto = new LeaveDto();
+
+        leaveDto.setStartDate(startDate);
+        leaveDto.setEndDate(endDate);
+
+        return leaveDto;
+    }
 }
