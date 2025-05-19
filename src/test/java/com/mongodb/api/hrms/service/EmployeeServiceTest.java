@@ -1,22 +1,17 @@
 package com.mongodb.api.hrms.service;
 
-import com.mongodb.api.hrms.dto.AddressDto;
 import com.mongodb.api.hrms.dto.EmployeeDto;
 import com.mongodb.api.hrms.mapper.EmployeeMapper;
-import com.mongodb.api.hrms.model.Address;
 import com.mongodb.api.hrms.model.Employee;
 import com.mongodb.api.hrms.repository.EmployeeRepository;
+import com.mongodb.api.hrms.utils.TestDataUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,12 +33,12 @@ class EmployeeServiceTest {
     void createExistingEmployee() {
         String id = "682904c2ad128f5295905416";
 
-        EmployeeDto input = createSampleEmployeeDto(null);
-        Employee inputAsEntity = createSampleEmployee(null);
-        Employee foundEmployee = createSampleEmployee(id);
-        Employee employeeToUpdate = createSampleEmployee(id);
-        Employee savedEmployee = createSampleEmployee(id);
-        EmployeeDto savedEmployeeDto = createSampleEmployeeDto(id);
+        EmployeeDto input = TestDataUtils.createFullyPopulatedEmployeeDto(null);
+        Employee inputAsEntity = TestDataUtils.createFullyPopulatedEmployee(null);
+        Employee foundEmployee = TestDataUtils.createAnotherFullyPopulatedEmployee(id);
+        Employee employeeToUpdate = TestDataUtils.createFullyPopulatedEmployee(id);
+        Employee savedEmployee = TestDataUtils.createFullyPopulatedEmployee(id);
+        EmployeeDto savedEmployeeDto = TestDataUtils.createFullyPopulatedEmployeeDto(id);
 
         when(employeeMapper.employeeDtoToEmployee(input)).thenReturn(inputAsEntity);
         when(employeeRepository.findByFirstNameAndLastNameAndPhoneNumber(input.getFirstName(), input.getLastName(),
@@ -67,10 +62,10 @@ class EmployeeServiceTest {
     void createNewEmployee() {
         String id = "682904c2ad128f5295905416";
 
-        EmployeeDto input = createSampleEmployeeDto(null);
-        Employee inputAsEntity = createSampleEmployee(null);
-        Employee savedEmployee = createSampleEmployee(id);
-        EmployeeDto savedEmployeeDto = createSampleEmployeeDto(id);
+        EmployeeDto input = TestDataUtils.createFullyPopulatedEmployeeDto(null);
+        Employee inputAsEntity = TestDataUtils.createFullyPopulatedEmployee(null);
+        Employee savedEmployee = TestDataUtils.createFullyPopulatedEmployee(id);
+        EmployeeDto savedEmployeeDto = TestDataUtils.createFullyPopulatedEmployeeDto(id);
 
         when(employeeMapper.employeeDtoToEmployee(input)).thenReturn(inputAsEntity);
         when(employeeRepository.findByFirstNameAndLastNameAndPhoneNumber(input.getFirstName(), input.getLastName(),
@@ -93,8 +88,8 @@ class EmployeeServiceTest {
     void searchEmployee() {
         String id = "682904c2ad128f5295905416";
 
-        Employee employee = createSampleEmployee(id);
-        EmployeeDto employeeDto = createSampleEmployeeDto(id);
+        Employee employee = TestDataUtils.createFullyPopulatedEmployee(id);
+        EmployeeDto employeeDto = TestDataUtils.createFullyPopulatedEmployeeDto(id);
 
         String name = employee.getFirstName();
 
@@ -108,85 +103,5 @@ class EmployeeServiceTest {
         verify(employeeMapper).employeeToEmployeeDto(employee);
 
         assertEquals(List.of(employeeDto), result);
-    }
-
-    EmployeeDto createSampleEmployeeDto(String id) {
-        EmployeeDto employeeDto = new EmployeeDto();
-
-        employeeDto.setId(id);
-        employeeDto.setFirstName("Ulysses");
-        employeeDto.setLastName("Morris");
-        employeeDto.setEmail("ulysses.morris@mail.com");
-        employeeDto.setPhoneNumber("40-792-3967");
-        employeeDto.setHireDate(LocalDate.of(2019, 10, 12));
-        employeeDto.setJobId("DIR");
-        employeeDto.setSalary(BigDecimal.valueOf(537755));
-        employeeDto.setManagerId("682904c2ad128f5295905415");
-
-        AddressDto address = new AddressDto();
-
-        address.setStreet("7184 Riverview Court");
-        address.setCity("Springfield");
-        address.setState("MI");
-        address.setZipCode("22708");
-
-        employeeDto.setAddress(address);
-
-        Map<String, Integer> leaveBalances = new HashMap<>();
-
-        leaveBalances.put("annual", 27);
-        leaveBalances.put("sick", 1);
-        leaveBalances.put("maternity", 7);
-        leaveBalances.put("paternity", 4);
-        leaveBalances.put("bereavement", 18);
-        leaveBalances.put("unpaid", 25);
-        leaveBalances.put("compensatory", 9);
-        leaveBalances.put("study", 17);
-        leaveBalances.put("casual", 16);
-        leaveBalances.put("sabbatical", 14);
-
-        employeeDto.setLeaveBalances(leaveBalances);
-
-        return employeeDto;
-    }
-
-    Employee createSampleEmployee(String id) {
-        Employee employee = new Employee();
-
-        employee.setId(id);
-        employee.setFirstName("Ulysses");
-        employee.setLastName("Morris");
-        employee.setEmail("ulysses.morris@mail.com");
-        employee.setPhoneNumber("40-792-3967");
-        employee.setHireDate(LocalDate.of(2019, 10, 12));
-        employee.setJobId("DIR");
-        employee.setSalary(BigDecimal.valueOf(537755));
-        employee.setManagerId("682904c2ad128f5295905415");
-
-        Address address = new Address();
-
-        address.setStreet("7184 Riverview Court");
-        address.setCity("Springfield");
-        address.setState("MI");
-        address.setZipCode("22708");
-
-        employee.setAddress(address);
-
-        Map<String, Integer> leaveBalances = new HashMap<>();
-
-        leaveBalances.put("annual", 27);
-        leaveBalances.put("sick", 1);
-        leaveBalances.put("maternity", 7);
-        leaveBalances.put("paternity", 4);
-        leaveBalances.put("bereavement", 18);
-        leaveBalances.put("unpaid", 25);
-        leaveBalances.put("compensatory", 9);
-        leaveBalances.put("study", 17);
-        leaveBalances.put("casual", 16);
-        leaveBalances.put("sabbatical", 14);
-
-        employee.setLeaveBalances(leaveBalances);
-
-        return employee;
     }
 }
