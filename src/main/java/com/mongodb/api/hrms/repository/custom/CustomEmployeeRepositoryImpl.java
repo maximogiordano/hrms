@@ -15,8 +15,8 @@ public class CustomEmployeeRepositoryImpl implements CustomEmployeeRepository {
 
     @Override
     public void decrementLeaveBalance(String employeeId, String leaveType, int numberOfDays) {
-        Query query = new Query(Criteria.where("_id").is(employeeId));
-        Update update = new Update().inc("leaveBalances." + leaveType, -numberOfDays);
+        var query = new Query(Criteria.where("_id").is(employeeId));
+        var update = new Update().inc("leaveBalances." + leaveType, -numberOfDays);
 
         mongoTemplate.updateFirst(query, update, Employee.class);
     }
