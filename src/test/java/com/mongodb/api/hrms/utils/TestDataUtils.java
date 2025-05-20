@@ -14,7 +14,11 @@ import java.util.Map;
 
 public class TestDataUtils {
     /**
-     * @return a new instance of a fully populated employee with a fixed set of data.
+     * Creates a new instance of a fully populated employee with a fixed dataset. It returns an object with the same
+     * data as {@link #createFullyPopulatedEmployeeDto(String)}
+     *
+     * @param id the employee id (can be null)
+     * @return a new instance of Employee
      */
     public static Employee createFullyPopulatedEmployee(String id) {
         Employee employee = new Employee();
@@ -57,7 +61,11 @@ public class TestDataUtils {
     }
 
     /**
-     * @return the same as {@link #createFullyPopulatedEmployee(String)}, but as a DTO.
+     * Creates a new instance of a fully populated employee with a fixed dataset. It returns an object with the same
+     * data as {@link #createFullyPopulatedEmployee(String)}
+     *
+     * @param id the employee id (can be null)
+     * @return a new instance of EmployeeDto
      */
     public static EmployeeDto createFullyPopulatedEmployeeDto(String id) {
         EmployeeDto employee = new EmployeeDto();
@@ -100,8 +108,11 @@ public class TestDataUtils {
     }
 
     /**
-     * @return a new instance of a fully populated employee with a fixed set of data, distinct from
+     * Creates a new instance of a fully populated employee with a fixed dataset. It returns an object distinct from
      * {@link #createFullyPopulatedEmployee(String)}
+     *
+     * @param id the employee id (can be null)
+     * @return a new instance of Employee
      */
     public static Employee createAnotherFullyPopulatedEmployee(String id) {
         Employee employee = new Employee();
@@ -144,7 +155,11 @@ public class TestDataUtils {
     }
 
     /**
-     * @return a new instance of a fully populated leave with a fixed set of data.
+     * Creates a new instance of a fully populated leave with a fixed dataset. It returns an object with the same data
+     * as {@link #createFullyPopulatedLeaveDto(String)}
+     *
+     * @param id the leave id (can be null)
+     * @return a new instance of Leave
      */
     public static Leave createFullyPopulatedLeave(String id) {
         Leave leave = new Leave();
@@ -161,7 +176,11 @@ public class TestDataUtils {
     }
 
     /**
-     * @return the same as {@link #createFullyPopulatedLeave(String)}, but as a DTO.
+     * Creates a new instance of a fully populated leave with a fixed dataset. It returns an object with the same data
+     * as {@link #createFullyPopulatedLeave(String)}
+     *
+     * @param id the leave id (can be null)
+     * @return a new instance of LeaveDto
      */
     public static LeaveDto createFullyPopulatedLeaveDto(String id) {
         LeaveDto leaveDto = new LeaveDto();
@@ -178,7 +197,11 @@ public class TestDataUtils {
     }
 
     /**
-     * @return a new instance of a leave with the specified date range.
+     * Creates a new instance of a leave with the specified date range.
+     *
+     * @param startDate the start date (inclusive)
+     * @param endDate   the end date (inclusive)
+     * @return a new instance of LeaveDto
      */
     public static LeaveDto createLeaveDto(LocalDate startDate, LocalDate endDate) {
         LeaveDto leaveDto = new LeaveDto();
