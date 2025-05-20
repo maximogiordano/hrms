@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 // Use Spring's test context with a specific configuration class
 @SpringJUnitConfig(LeaveMapperTest.Config.class)
@@ -39,6 +40,11 @@ class LeaveMapperTest {
     }
 
     @Test
+    void nullLeaveDtoToNullLeave() {
+        assertNull(leaveMapper.leaveDtoToLeave(null));
+    }
+
+    @Test
     void leaveToLeaveDto() {
         String id = "68294342f43b2332e73fbb07";
 
@@ -48,5 +54,10 @@ class LeaveMapperTest {
         LeaveDto result = leaveMapper.leaveToLeaveDto(source);
 
         assertEquals(target, result);
+    }
+
+    @Test
+    void nullLeaveToNullLeaveDto() {
+        assertNull(leaveMapper.leaveToLeaveDto(null));
     }
 }

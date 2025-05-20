@@ -3,11 +3,15 @@ package com.mongodb.api.hrms.mapper;
 import com.mongodb.api.hrms.dto.EmployeeDto;
 import com.mongodb.api.hrms.model.Employee;
 import com.mongodb.api.hrms.utils.TestDataUtils;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -26,27 +30,87 @@ class EmployeeMapperTest {
     @Autowired
     EmployeeMapper employeeMapper;
 
-    @Test
-    void employeeDtoToEmployee() {
-        String id = "682904c2ad128f5295905416";
-
-        EmployeeDto source = TestDataUtils.createFullyPopulatedEmployeeDto(id);
-        Employee target = TestDataUtils.createFullyPopulatedEmployee(id);
-
-        Employee result = employeeMapper.employeeDtoToEmployee(source);
-
-        assertEquals(target, result);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("employeeDtoToEmployeeData")
+    void employeeDtoToEmployee(String testCase, EmployeeDto source, Employee expected) {
+        assertEquals(expected, employeeMapper.employeeDtoToEmployee(source));
     }
 
-    @Test
-    void employeeToEmployeeDto() {
+    static Stream<Arguments> employeeDtoToEmployeeData() {
         String id = "682904c2ad128f5295905416";
 
-        Employee source = TestDataUtils.createFullyPopulatedEmployee(id);
-        EmployeeDto target = TestDataUtils.createFullyPopulatedEmployeeDto(id);
+        String testCase1 = "address == null && leaveBalances == null";
+        EmployeeDto employeeDto1 = TestDataUtils.createFullyPopulatedEmployeeDto(id);
+        employeeDto1.setAddress(null);
+        employeeDto1.setLeaveBalances(null);
+        Employee employee1 = TestDataUtils.createFullyPopulatedEmployee(id);
+        employee1.setAddress(null);
+        employee1.setLeaveBalances(null);
 
-        EmployeeDto result = employeeMapper.employeeToEmployeeDto(source);
+        String testCase2 = "address == null && leaveBalances != null";
+        EmployeeDto employeeDto2 = TestDataUtils.createFullyPopulatedEmployeeDto(id);
+        employeeDto2.setAddress(null);
+        Employee employee2 = TestDataUtils.createFullyPopulatedEmployee(id);
+        employee2.setAddress(null);
 
-        assertEquals(target, result);
+        String testCase3 = "address != null && leaveBalances == null";
+        EmployeeDto employeeDto3 = TestDataUtils.createFullyPopulatedEmployeeDto(id);
+        employeeDto3.setLeaveBalances(null);
+        Employee employee3 = TestDataUtils.createFullyPopulatedEmployee(id);
+        employee3.setLeaveBalances(null);
+
+        String testCase4 = "address != null && leaveBalances != null";
+        EmployeeDto employeeDto4 = TestDataUtils.createFullyPopulatedEmployeeDto(id);
+        Employee employee4 = TestDataUtils.createFullyPopulatedEmployee(id);
+
+        return Stream.of(
+                Arguments.of("employee == null", null, null),
+                Arguments.of(testCase1, employeeDto1, employee1),
+                Arguments.of(testCase2, employeeDto2, employee2),
+                Arguments.of(testCase3, employeeDto3, employee3),
+                Arguments.of(testCase4, employeeDto4, employee4)
+        );
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("employeeToEmployeeDtoData")
+    void employeeToEmployeeDto(String testCase, Employee source, EmployeeDto expected) {
+        assertEquals(expected, employeeMapper.employeeToEmployeeDto(source));
+    }
+
+    static Stream<Arguments> employeeToEmployeeDtoData() {
+        String id = "682904c2ad128f5295905416";
+
+        String testCase1 = "address == null && leaveBalances == null";
+        Employee employee1 = TestDataUtils.createFullyPopulatedEmployee(id);
+        employee1.setAddress(null);
+        employee1.setLeaveBalances(null);
+        EmployeeDto employeeDto1 = TestDataUtils.createFullyPopulatedEmployeeDto(id);
+        employeeDto1.setAddress(null);
+        employeeDto1.setLeaveBalances(null);
+
+        String testCase2 = "address == null && leaveBalances != null";
+        Employee employee2 = TestDataUtils.createFullyPopulatedEmployee(id);
+        employee2.setAddress(null);
+        EmployeeDto employeeDto2 = TestDataUtils.createFullyPopulatedEmployeeDto(id);
+        employeeDto2.setAddress(null);
+
+        String testCase3 = "address != null && leaveBalances == null";
+        Employee employee3 = TestDataUtils.createFullyPopulatedEmployee(id);
+        employee3.setLeaveBalances(null);
+        EmployeeDto employeeDto3 = TestDataUtils.createFullyPopulatedEmployeeDto(id);
+        employeeDto3.setLeaveBalances(null);
+
+        String testCase4 = "address != null && leaveBalances != null";
+        Employee employee4 = TestDataUtils.createFullyPopulatedEmployee(id);
+        EmployeeDto employeeDto4 = TestDataUtils.createFullyPopulatedEmployeeDto(id);
+
+        return Stream.of(
+                Arguments.of("employee == null", null, null),
+                Arguments.of(testCase1, employee1, employeeDto1),
+                Arguments.of(testCase2, employee2, employeeDto2),
+                Arguments.of(testCase3, employee3, employeeDto3),
+                Arguments.of(testCase4, employee4, employeeDto4)
+        );
     }
 }
