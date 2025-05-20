@@ -1,26 +1,16 @@
 package com.mongodb.api.hrms.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.api.hrms.advice.GlobalExceptionHandler;
-import com.mongodb.api.hrms.dto.AuthRequest;
-import com.mongodb.api.hrms.dto.AuthResponse;
 import com.mongodb.api.hrms.dto.EmployeeDto;
 import com.mongodb.api.hrms.dto.ErrorDto;
 import com.mongodb.api.hrms.dto.ErrorItemDto;
 import com.mongodb.api.hrms.model.Employee;
-import com.mongodb.api.hrms.model.User;
 import com.mongodb.api.hrms.repository.EmployeeRepository;
-import com.mongodb.api.hrms.repository.UserRepository;
 import com.mongodb.api.hrms.utils.TestDataUtils;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,23 +20,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-class EmployeeControllerIntegrationTest {
-    @Autowired
-    MockMvc mockMvc;
-
-    @MockitoBean
-    UserRepository userRepository;
-
+class EmployeeControllerIntegrationTest extends IntegrationTest {
     @MockitoBean
     EmployeeRepository employeeRepository;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
-    @Autowired
-    ObjectMapper objectMapper;
 
     @Test
     void createExistingEmployee() throws Exception {
@@ -157,29 +133,5 @@ class EmployeeControllerIntegrationTest {
         JsonNode actual = objectMapper.readTree(response);
 
         assertEquals(expected, actual);
-    }
-
-    String performSuccessfulLogin(String username, String password, String role) throws Exception {
-        User user = new User();
-
-        user.setId(username);
-        user.setPassword(passwordEncoder.encode(password));
-        user.setRole(role);
-
-        when(userRepository.findById(username)).thenReturn(Optional.of(user));
-
-        AuthRequest authRequest = new AuthRequest();
-
-        authRequest.setUsername(username);
-        authRequest.setPassword(password);
-
-        String response = mockMvc.perform(post("/auth/login")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(authRequest)))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        return objectMapper.readValue(response, AuthResponse.class).getToken();
     }
 }
