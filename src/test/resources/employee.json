@@ -1,0 +1,29 @@
+{
+  "id": "682904c2ad128f5295905416",
+  "first_name": "Ulysses",
+  "last_name": "Morris",
+  "email": "ulysses.morris@mail.com",
+  "phone_number": "940-792-3967",
+  "hire_date": "2019-10-12",
+  "job_id": "DIR",
+  "salary": 537755,
+  "manager_id": "682904c2ad128f5295905415",
+  "address": {
+    "street": "7184 Riverview Court",
+    "city": "Springfield",
+    "state": "MI",
+    "zip_code": "22708"
+  },
+  "leave_balances": {
+    "annual": 27,
+    "sick": 1,
+    "maternity": 7,
+    "paternity": 4,
+    "bereavement": 18,
+    "unpaid": 25,
+    "compensatory": 9,
+    "study": 17,
+    "casual": 16,
+    "sabbatical": 14
+  }
+}
