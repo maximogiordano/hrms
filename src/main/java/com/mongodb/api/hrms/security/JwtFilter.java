@@ -11,7 +11,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -69,7 +68,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private void setSecurityContext(String token, String username) {
         // load user details
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        var userDetails = userDetailsService.loadUserByUsername(username);
 
         // convert roles from the token into Spring Security authorities
         List<SimpleGrantedAuthority> authorities = jwtUtils.extractRoles(token)
