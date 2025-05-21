@@ -9,6 +9,11 @@ import com.mongodb.api.hrms.model.Employee;
 import com.mongodb.api.hrms.repository.EmployeeRepository;
 import com.mongodb.api.hrms.utils.TestDataUtils;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -120,16 +125,23 @@ class EmployeeControllerIntegrationTest extends IntegrationTest {
         Employee employee = TestDataUtils.createFullyPopulatedEmployee(id);
         EmployeeDto employeeDto = TestDataUtils.createFullyPopulatedEmployeeDto(id);
 
-        when(employeeRepository.findByFirstNameContainingOrLastNameContaining(employee.getFirstName(),
-                employee.getFirstName())).thenReturn(List.of(employee));
+        String name = employee.getFirstName();
+        int page = 0;
+        int size = 10;
 
-        String response = mockMvc.perform(get("/employees?name=" + employee.getFirstName())
+        Pageable pageable = PageRequest.of(page, size, Sort.by("lastName", "firstName", "phoneNumber"));
+        Page<Employee> employees = new PageImpl<>(List.of(employee), pageable, 1);
+        Page<EmployeeDto> employeesDto = new PageImpl<>(List.of(employeeDto), pageable, 1);
+
+        when(employeeRepository.findByName(name, pageable)).thenReturn(employees);
+
+        String response = mockMvc.perform(get("/employees?name=" + name + "&page=" + page + "&size=" + size)
                         .header("Authorization", "Bearer " + token))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        JsonNode expected = objectMapper.readTree(objectMapper.writeValueAsString(List.of(employeeDto)));
+        JsonNode expected = objectMapper.readTree(objectMapper.writeValueAsString(employeesDto));
         JsonNode actual = objectMapper.readTree(response);
 
         assertEquals(expected, actual);

@@ -6,10 +6,13 @@ import com.mongodb.api.hrms.model.Employee;
 import com.mongodb.api.hrms.repository.EmployeeRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,10 +40,10 @@ public class EmployeeService {
         return employeeMapper.employeeToEmployeeDto(employee);
     }
 
-    public List<EmployeeDto> searchEmployeeByName(String name) {
-        return employeeRepository.findByFirstNameContainingOrLastNameContaining(name, name)
-                .stream()
-                .map(employeeMapper::employeeToEmployeeDto)
-                .toList();
+    public Page<EmployeeDto> searchEmployeeByName(String name, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("lastName", "firstName", "phoneNumber"));
+
+        return employeeRepository.findByName(name, pageable)
+                .map(employeeMapper::employeeToEmployeeDto);
     }
 }

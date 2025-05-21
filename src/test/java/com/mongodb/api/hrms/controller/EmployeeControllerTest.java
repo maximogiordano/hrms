@@ -8,6 +8,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -39,13 +44,19 @@ class EmployeeControllerTest {
     @Test
     void searchEmployeeByName() {
         EmployeeDto employeeDto = TestDataUtils.createFullyPopulatedEmployeeDto("682904c2ad128f5295905416");
+
         String name = employeeDto.getFirstName();
+        int page = 0;
+        int size = 10;
 
-        when(employeeService.searchEmployeeByName(name)).thenReturn(List.of(employeeDto));
+        Pageable pageable = PageRequest.of(page, size, Sort.by("lastName", "firstName", "phoneNumber"));
+        Page<EmployeeDto> employees = new PageImpl<>(List.of(employeeDto), pageable, 1);
 
-        List<EmployeeDto> result = employeeController.searchEmployeeByName(name);
+        when(employeeService.searchEmployeeByName(name, page, size)).thenReturn(employees);
 
-        verify(employeeService).searchEmployeeByName(name);
-        assertEquals(List.of(employeeDto), result);
+        Page<EmployeeDto> result = employeeController.searchEmployeeByName(name, page, size);
+
+        verify(employeeService).searchEmployeeByName(name, page, size);
+        assertEquals(employees, result);
     }
 }

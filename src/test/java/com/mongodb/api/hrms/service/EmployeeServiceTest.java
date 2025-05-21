@@ -10,6 +10,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -85,23 +90,28 @@ class EmployeeServiceTest {
     }
 
     @Test
-    void searchEmployee() {
+    void searchEmployeeByName() {
         String id = "682904c2ad128f5295905416";
 
         Employee employee = TestDataUtils.createFullyPopulatedEmployee(id);
         EmployeeDto employeeDto = TestDataUtils.createFullyPopulatedEmployeeDto(id);
 
         String name = employee.getFirstName();
+        int page = 0;
+        int size = 10;
 
-        when(employeeRepository.findByFirstNameContainingOrLastNameContaining(name, name))
-                .thenReturn(List.of(employee));
+        Pageable pageable = PageRequest.of(page, size, Sort.by("lastName", "firstName", "phoneNumber"));
+        Page<Employee> employees = new PageImpl<>(List.of(employee), pageable, 1);
+        Page<EmployeeDto> employeesDto = new PageImpl<>(List.of(employeeDto), pageable, 1);
+
+        when(employeeRepository.findByName(name, pageable)).thenReturn(employees);
         when(employeeMapper.employeeToEmployeeDto(employee)).thenReturn(employeeDto);
 
-        List<EmployeeDto> result = employeeService.searchEmployeeByName(name);
+        Page<EmployeeDto> result = employeeService.searchEmployeeByName(name, page, size);
 
-        verify(employeeRepository).findByFirstNameContainingOrLastNameContaining(name, name);
+        verify(employeeRepository).findByName(name, pageable);
         verify(employeeMapper).employeeToEmployeeDto(employee);
 
-        assertEquals(List.of(employeeDto), result);
+        assertEquals(employeesDto, result);
     }
 }
